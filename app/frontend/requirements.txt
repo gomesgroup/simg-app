@@ -1,0 +1,5 @@
+streamlit
+rq
+numpy
+streamlit-ketcher
+rdkit
