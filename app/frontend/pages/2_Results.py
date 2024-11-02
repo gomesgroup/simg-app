@@ -2,6 +2,7 @@ import os
 import time
 
 import streamlit as st
+from streamlit_molstar import st_molstar_content
 
 import redis
 from rq import Queue
@@ -37,6 +38,11 @@ job_id = st.query_params['job_id']
 job = q.fetch_job(job_id)
 
 if job.meta['status'] == 'Completed' and job.result:
+    st_molstar_content(
+        job.result['xyz'],
+        'xyz'
+    )
+
     cols = st.columns(2)
     cols[0].write(f"Results for {job.result['smiles']}")
     cols[0].image(
@@ -44,6 +50,14 @@ if job.meta['status'] == 'Completed' and job.result:
         caption="Generated graph (w/o 2nd order interactions)",
         use_column_width=True
     )
+
+    cols[1].write("Interactions")
+    cols[1].image(
+        job.result['interactions'],
+        caption="Interaction matrix",
+        use_column_width=True
+    )
+
 
     atom_targets = ['Charge', 'Core', 'Valence', 'Total']
     bond_targets = ['occupancy', 's', 'p', 'd', 'f', 'pol_diff', 'pol_coeff_diff']
@@ -65,15 +79,8 @@ if job.meta['status'] == 'Completed' and job.result:
     numbers.loc[job.result['is_bond'], [f"atom/{target}" for target in atom_targets]] = ''
     numbers.loc[job.result['is_bond'], [f"lone_pair/{target}" for target in lone_pair_targets]] = ''
 
-    cols[1].table(
-        numbers
-    )
-
-    st.write("Interactions")
-    st.image(
-        job.result['interactions'],
-        caption="Interaction matrix",
-        use_column_width=True
+    st.table(
+        numbers.drop(columns=['bond/d', 'bond/f', 'lone_pair/d', 'lone_pair/f'])
     )
 
 else:

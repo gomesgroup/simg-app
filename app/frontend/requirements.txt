@@ -3,3 +3,4 @@ rq
 numpy
 streamlit-ketcher
 rdkit
+streamlit-molstar

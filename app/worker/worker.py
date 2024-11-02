@@ -135,12 +135,13 @@ def submit_request(param):
 
     return {
         "smiles": param if '\n' not in param else '.xyz file',
+        "xyz": xyz,
         "graph": plot_homo_molecule(results[0]),
         "node_level": results[3][1],
         "is_atom": results[0].is_atom.bool().numpy(),
         "is_lp": results[0].is_lp.bool().numpy(),
         "is_bond": results[0].is_bond.bool().numpy(),
-        "interactions": plot_interaction_matrix(*results[2])
+        "interactions": plot_interaction_matrix(*results[2]),
     }
 
 
