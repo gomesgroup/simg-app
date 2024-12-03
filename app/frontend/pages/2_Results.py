@@ -8,6 +8,7 @@ import redis
 from rq import Queue
 
 import pandas as pd
+import numpy as np
 
 st.set_page_config(layout="wide")
 css = '''
@@ -58,6 +59,34 @@ if job.meta['status'] == 'Completed' and job.result:
         use_column_width=True
     )
 
+    st.divider()
+
+    cols = st.columns(2)
+    cols[0].write("Explore specific interaction")
+    n_atoms = job.result['is_atom'].sum()
+    interaction_a = cols[0].selectbox(
+        "Interaction A",
+        np.arange(len(job.result['interaction_table'])) + n_atoms,
+        index=None
+    )
+    interaction_b = cols[0].selectbox(
+        "Interaction B",
+        np.arange(len(job.result['interaction_table'])) + n_atoms,
+        index=None
+    )
+
+    if interaction_a and interaction_b:
+        probability = job.result['interaction_table'][interaction_a - n_atoms, interaction_b - n_atoms]
+        cols[1].write(f"Probability: {probability:.3f}")
+        cols[1].write(
+            job.result['interaction_predictions'][
+                (interaction_a - n_atoms) * len(job.result['interaction_table']) + (interaction_b - n_atoms)
+                ]
+        )
+
+    st.divider()
+
+    # Plot interaction table
 
     atom_targets = ['Charge', 'Core', 'Valence', 'Total']
     bond_targets = ['occupancy', 's', 'p', 'd', 'f', 'pol_diff', 'pol_coeff_diff']

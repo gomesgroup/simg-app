@@ -131,8 +131,6 @@ def submit_request(param):
     job.meta['status'] = 'Completed'
     job.save_meta()
 
-    print(results[2][0])
-
     return {
         "smiles": param if '\n' not in param else '.xyz file',
         "xyz": xyz,
@@ -142,6 +140,8 @@ def submit_request(param):
         "is_lp": results[0].is_lp.bool().numpy(),
         "is_bond": results[0].is_bond.bool().numpy(),
         "interactions": plot_interaction_matrix(*results[2]),
+        "interaction_table": results[2][0],
+        "interaction_predictions": results[3][2]
     }
 
 
