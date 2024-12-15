@@ -49,14 +49,14 @@ if job.meta['status'] == 'Completed' and job.result:
     cols[0].image(
         job.result['graph'],
         caption="Generated graph (w/o 2nd order interactions)",
-        use_column_width=True
+        use_container_width=True
     )
 
     cols[1].write("Interactions")
     cols[1].image(
         job.result['interactions'],
         caption="Interaction matrix",
-        use_column_width=True
+        use_container_width=True
     )
 
     st.divider()
