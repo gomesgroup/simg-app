@@ -2,6 +2,7 @@ import os
 
 import streamlit as st
 from streamlit_ketcher import st_ketcher
+from streamlit_molstar import st_molstar_content
 
 import redis
 from rq import Queue
@@ -24,7 +25,32 @@ def nav_to(url):
     """ % (url)
     st.write(nav_script, unsafe_allow_html=True)
 
+st.write('Try one of these molecules:')
+cols = st.columns(3)
+for i in range(3):
+    with open(f'test_compounds/{i}.xyz', 'r') as f:
+        xyz = f.read()
 
+    with cols[i]:
+        st_molstar_content(
+            xyz,
+            'xyz'
+        )
+
+        if st.button('Try', use_container_width=True, key=f'try_{i}'):
+            redis_url = os.environ.get('REDIS_HOST')
+            conn = redis.from_url(redis_url)
+
+            q = Queue(connection=conn)
+            job = q.enqueue("worker.submit_request", xyz)
+            job.meta['status'] = 'Submitted'
+            job.save_meta()
+
+            st.write("Redirecting to the results page")
+            nav_to(f"/Results?job_id={job.id}")
+
+st.divider()
+st.write('Provide your own:')
 param = st_ketcher()
 
 if param:
@@ -78,7 +104,6 @@ if uploaded_file is not None:
     st.write("File uploaded; submitting the long request")
 
     contents = uploaded_file.read().decode()
-    st.write(contents)
 
     redis_url = os.environ.get('REDIS_HOST')
     conn = redis.from_url(redis_url)

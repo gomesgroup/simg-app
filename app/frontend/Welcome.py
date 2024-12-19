@@ -15,7 +15,7 @@ def app():
     cols[0].image('cmu.png')
 
     cols = st.columns([0.8, 0.2])
-    cols[0].header("""Advancing Molecular Machine Learned Representations with Stereoelectronics-Infused Molecular Graphs""")
+    cols[0].header("""Advancing Molecular Machine Learning Representations with Stereoelectronics-Infused Molecular Graphs""")
     cols[0].write("by Daniil A Boiko, Thiago Reschützegger, Benjamin Sanchez-Lengeling, Samuel M Blau, Gabe Gomes")
     cols[0].write("")
 
